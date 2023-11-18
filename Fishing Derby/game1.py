@@ -5,16 +5,16 @@ import math
 # Initialize pygame
 pygame.init()
 
-# Set up the display
-screen = pygame.display.set_mode((800, 600))
-pygame.display.set_caption("Fishing Derby Game")
-
 # Define colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 180)
+
+# Set up the display
+screen = pygame.display.set_mode((800, 600))
+pygame.display.set_caption("Fishing Derby Game")
 
 # Load images
 fish_image = pygame.image.load("bluefish.png")
@@ -38,7 +38,7 @@ fishes = []
 fishes2 = []
 
 # Initialize multiple fish objects
-for i in range(8):
+for i in range(4):
     fish_x = random.randint(0, 800)
     fish_y = random.randint(320, 580)
     fish_direction = random.choice([-1, 1])
@@ -59,7 +59,7 @@ for i in range(8):
             "image": fish_image
         })
 
-for i in range(4):
+for i in range(2):
     fish2_x = random.randint(0, 800)
     fish2_y = random.randint(320, 580)
     fish2_direction = random.choice([-1, 1])
@@ -83,45 +83,48 @@ for i in range(4):
 background_image = pygame.image.load("background-2.jpg")
 background_image = pygame.transform.scale(background_image, (800,600))
 
+test_image = pygame.image.load("test.png")
+test_image = pygame.transform.scale(test_image, (2,2))
+
 score = 0
 time_limit = 5
 
-class Hook:
-    def __init__(self):
-        
-        self.anchor_x = 100     # Fixed end
-        self.anchor_y = 400
+""" <------- Lines defining ---------> """
+line_color = BLACK
 
-        self.end_x = self.anchor_x          # Movable end
-        self.end_y = self.anchor_y - 100
+# Line 1
+start1_x = 75
+start1_y = 230
 
-        self.length = 100                   #Min.length
+end1_x = 175
+end1_y = start1_y
 
-        self.color = BLACK
+start2_x = 695
+start2_y = 235
 
-    def update(self, direction):
-        # Adjust the hook's length based on the direction
-        if direction == "right":
-            self.length += random.randint(1,150)
-        elif direction == "left":
-            self.length -= random.randint(1,150)
-        elif direction == "up":
-            self.end_y = self.anchor_y - random.randint(1,150)
-        elif direction == "down":
-            self.end_y = self.anchor_y + random.randint(1,150)
+end2_x = 595
+end2_y = start2_y
 
-        # Limit the hook's length to a minimum of 10
-        if self.length < 10:
-            self.length = 10
+# Line 2
+start3_x = end1_x
+start3_y = end1_y
 
-        # Update the hook's end point coordinates
-        self.end_x = self.anchor_x + (self.length * math.cos(math.radians(90 + direction)))
-        self.end_y = self.anchor_y + (self.length * math.sin(math.radians(90 + direction)))
+end3_x = end1_x
+end3_y = end1_y + 100
 
-    def draw(self, screen):
-        # Draw the hook line
-        pygame.draw.line(screen, self.color, (self.anchor_x, self.anchor_y), (self.end_x, self.end_y), 3)
+start4_x = end2_x
+start4_y = end2_y
 
+end4_x = end2_x
+end4_y = end2_y + 100
+
+""" Expanding of lines"""
+isExpanding = True
+isExpanding2 = True
+isExpanding3 = True
+isExpanding4 = True
+
+""" <------ Lines defining -------> """
 
 # Main game loop
 running = True
@@ -136,6 +139,82 @@ while running:
     # Calculate remaining time
     remaining_time = max(0, time_limit - (pygame.time.get_ticks() - start_time) / 1000)
 
+    """ Only belongs to the line which is hook """
+
+    k = random.choice([-1, 1])
+
+    if(k==1):
+        isExpanding = True
+    else:
+        isExpanding = False
+
+    if isExpanding:
+        if(end1_x>400):
+            end1_x = 350
+        end1_x += 1
+    else:
+        if(end1_x<start1_x):
+            end1_x = start1_x + 20
+        end1_x -= 1
+
+    r = random.choice([-1, 1])
+
+    if(r==1):
+        isExpanding2 = True
+    else:
+        isExpanding2 = False
+
+    if isExpanding2:
+        if(end2_x<400):
+            end2_x = 450
+        end2_x -= 4
+    else:
+        if(end2_x>start2_x):
+            end2_x = start2_x - 20
+        end2_x += 4
+        
+    start3_x = end1_x
+    start3_y = end1_y
+    end3_x = start3_x
+ 
+    start4_x = end2_x
+    start4_y = end2_y
+    end4_x = start4_x
+
+    z = random.choice([-1, 1])
+
+    if(z==1):
+        isExpanding3 = True
+    else:
+        isExpanding3 = False
+
+    if isExpanding3:
+        if(end3_y>600):
+            end3_y = 575
+        end3_y += 4
+    else:
+        if(end3_y<start3_y):
+            end3_y = start3_y + 20
+        end3_y -= 4
+
+    p = random.choice([-1, 1])
+
+    if(p==1):
+        isExpanding4 = True
+    else:
+        isExpanding4 = False
+
+    if isExpanding4:
+        if(end4_y>600):
+            end4_y = 575
+        end4_y += 4
+    else:
+        if(end4_y<start4_y):
+            end4_y = start4_y + 20
+        end4_y -= 4
+
+    """ Only belongs to the line, which is hook"""
+
     if remaining_time > 0:
         # Update the fish position
         for fish in fishes:
@@ -144,6 +223,15 @@ while running:
                 fishes.remove(fish)  
             elif fish["x"] < -15:
                 fishes.remove(fish)
+            
+            if(abs(fish["x"] - end3_x) < 30 and abs(fish["y"] - end3_y) < 30):
+                score += 2
+            # fish_x = random.randint(0, 800)
+            # fish_y = random.randint(400, 600)
+            if(abs(fish["x"] - end4_x) < 30 and abs(fish["y"] - end4_y) < 30):
+                score += 2
+            # fish_x = random.randint(0, 800)
+            # fish_y = random.randint(400, 600)
 
         for fish in fishes2:
             fish["x"] += fish["speed"] * fish["direction"]
@@ -153,7 +241,7 @@ while running:
                 fishes2.remove(fish)
 
         # Generate new fishes
-        if len(fishes) < 10:
+        if len(fishes) < 6:
             fish_y = random.randint(400, 600)
             fish_direction = random.choice([-1, 1])
             if fish_direction == -1:
@@ -175,7 +263,7 @@ while running:
                     "image": fish_image
                 })
 
-        if len(fishes2) < 10:
+        if len(fishes2) < 6:
             fish2_y = random.randint(400, 600)
             fish2_direction = random.choice([-1, 1])
             if fish2_direction == -1:
@@ -198,14 +286,40 @@ while running:
                 })
 
     # Check for a collision
-    if abs(fish_x - fish2_x) < 50 and abs(fish_y - fish2_y) < 50:
-        score += 1
+    # if abs(fish_x - fish2_x) < 50 and abs(fish_y - fish2_y) < 50:
+    #     score += 1
+    #     fish_x = random.randint(0, 800)
+    #     fish_y = random.randint(400, 600)
+    
+    if(abs(fish_x - end3_x) < 30 and abs(fish_y - end3_y) < 30):
+        score += 2
         fish_x = random.randint(0, 800)
         fish_y = random.randint(400, 600)
+    if(abs(fish2_x - end3_x) < 30 and abs(fish2_y - end3_y) < 30):
+        score -= 1
+        fish2_x = random.randint(0, 800)
+        fish2_y = random.randint(400, 600)
+    
+    if(abs(fish_x - end4_x) < 30 and abs(fish_y - end4_y) < 30):
+        score += 2
+        fish_x = random.randint(0, 800)
+        fish_y = random.randint(400, 600)
+    if(abs(fish2_x - end4_x) < 30 and abs(fish2_y - end4_y) < 30):
+        score -= 1
+        fish2_x = random.randint(0, 800)
+        fish2_y = random.randint(400, 600)
 
     # Fill the screen
     #screen.fill(GREEN)
     screen.blit(background_image, (0, 0))
+
+    pygame.draw.line(screen, line_color, (start1_x, start1_y), (end1_x, end1_y), 3)
+    pygame.draw.line(screen, line_color, (start2_x, start2_y), (end2_x, end2_y), 3)
+    pygame.draw.line(screen, line_color, (start3_x, start3_y), (end3_x, end3_y), 3)
+    pygame.draw.line(screen, line_color, (start4_x, start4_y), (end4_x, end4_y), 3)
+
+    # left vertical
+    #right vertical
 
     # Draw fishes
     for fish in fishes:
@@ -227,6 +341,8 @@ while running:
     screen.blit(score_text, (10, 10))
     screen.blit(time_text, (370, 10))
     screen.blit(score_text, (680, 10))
+    screen.blit(test_image, (75,240))       # Remember, (75,240) are the coordinates of the agent1's hand
+    screen.blit(test_image, (725,250))      # (725,250) are the coordinates of agent2's hand
 
     # Update the display
     pygame.display.flip()
@@ -244,3 +360,45 @@ pygame.display.flip()
 pygame.time.wait(5000)
 
 pygame.quit()
+
+
+
+
+
+
+
+# class Hook:
+#     def __init__(self):
+        
+#         self.anchor_x = 100     # Fixed end
+#         self.anchor_y = 400
+
+#         self.end_x = self.anchor_x          # Movable end
+#         self.end_y = self.anchor_y - 100
+
+#         self.length = 100                   #Min.length
+
+#         self.color = BLACK
+
+#     def update(self, direction):
+#         # Adjust the hook's length based on the direction
+#         if direction == "right":
+#             self.length += random.randint(1,150)
+#         elif direction == "left":
+#             self.length -= random.randint(1,150)
+#         elif direction == "up":
+#             self.end_y = self.anchor_y - random.randint(1,150)
+#         elif direction == "down":
+#             self.end_y = self.anchor_y + random.randint(1,150)
+
+#         # Limit the hook's length to a minimum of 10
+#         if self.length < 10:
+#             self.length = 10
+
+#         # Update the hook's end point coordinates
+#         self.end_x = self.anchor_x + (self.length * math.cos(math.radians(90 + direction)))
+#         self.end_y = self.anchor_y + (self.length * math.sin(math.radians(90 + direction)))
+
+#     def draw(self, screen):
+#         # Draw the hook line
+#         pygame.draw.line(screen, self.color, (self.anchor_x, self.anchor_y), (self.end_x, self.end_y), 3)
