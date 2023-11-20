@@ -4,6 +4,7 @@ from copy import copy
 
 import pygame
 import math
+import time
 
 import numpy as np
 from gymnasium.spaces import  *
@@ -34,10 +35,8 @@ class CustomEnvironment(ParallelEnv):
         self.fishes3 = {5:[745,475],6:[695,530]}    # Blue-RL
         self.fishes4 = {7:[445,555],8:[145,405]}    # Red-RL
 
-        self.observation_spaces = dict(zip(self.possible_agents,[MultiDiscrete([800]*18)]))
+        self.observation_spaces = dict(zip(self.possible_agents,[MultiDiscrete([800]*18)]*2))
         self.action_spaces = dict(zip(self.possible_agents,[Discrete(4)]*2))
-
-        
 
         
         pygame.init()
@@ -178,8 +177,11 @@ class CustomEnvironment(ParallelEnv):
             if(fish[0]<0):
                 fish[0] = 805
         
+        self.termination = 0
         if self.rewards["fm1"]>50 or self.rewards["fm2"]>50:
             terminations= {a: True for a in self.agents}
+
+            self.termination = 1
 
         # Check truncation conditions (overwrites termination conditions)
         truncations = {a: False for a in self.agents}
@@ -227,21 +229,27 @@ class CustomEnvironment(ParallelEnv):
         # Display score and time
         font = pygame.font.SysFont("Arial", 32)
         score1_text = font.render(f"Score: {self.rewards['fm1']}", True, (0,0,0))
-        score2_text = font.render(f"Score: {self.rewards['fm1']}", True, (0,0,0))
+        score2_text = font.render(f"Score: {self.rewards['fm2']}", True, (0,0,0))
 
         self.screen.blit(score1_text, (10, 10))
         self.screen.blit(score2_text, (680, 10))
         self.screen.blit(self.test_image, (75,240))       # Remember, (75,240) are the coordinates of the agent1's hand
-        self.screen.blit(self.test_image, (300,350))        
+        self.screen.blit(self.test_image, (300,350)) 
 
-        if(self.rewards['fm1'] > self.rewards['fm2']):
-            final_score_text = font.render(f"Winner: Player-1", True, (255,0,0))
-        elif(self.rewards['fm1'] == self.rewards['fm2']):
-            final_score_text = font.render(f"Match Drawn", True, (255,0,0))
-        else:
-            final_score_text = font.render(f"Winner: Player-2", True, (255,0,0))
+        time.sleep(0.1)    
 
-        self.screen.blit(final_score_text, (300, 300))
+        if(self.termination == 1):
+            font = pygame.font.SysFont("Arial", 32)
+
+            if(self.rewards['fm1'] > self.rewards['fm2']):
+                final_score_text = font.render(f"Winner: Player-1", True, (255,0,0))
+            elif(self.rewards['fm1'] == self.rewards['fm2']):
+                final_score_text = font.render(f"Match Drawn", True, (255,0,0))
+            else:
+                final_score_text = font.render(f"Winner: Player-2", True, (255,0,0))
+
+            self.screen.blit(final_score_text, (300, 300))
+
         pygame.display.flip()
 
         pass

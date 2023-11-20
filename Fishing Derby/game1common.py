@@ -153,7 +153,7 @@ isExpanding4 = True
 """ <------------ Game Loop ---------->"""
 
 running = True
-# start_time = pygame.time.get_ticks() 
+start_time = pygame.time.get_ticks() 
 
 while running:
    
@@ -161,7 +161,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    # remaining_time = max(0, time_limit - (pygame.time.get_ticks() - start_time) / 1000)
+    remaining_time = max(0, time_limit - (pygame.time.get_ticks() - start_time) / 1000)
 
     """ Only belongs to the line which is hook """
 
@@ -230,14 +230,14 @@ while running:
     """ <--------- Definition of Collision ----------> """
 
     def ifIsCollide(co_fx,co_fy,co_sx,co_sy):
-        if(abs(co_fx - co_sx)< 10 and abs(co_fy - co_sy) < 10):
+        if(abs(co_fx - co_sx)< 20 and abs(co_fy - co_sy) < 20):
             return True
         return False
             
     """ <--------- Definition of Collision ----------> """
 
 
-    if (score1<50 and score2<50):
+    if remaining_time > 0:
         for fish in fishes:
             fish["x"] += fish["speed"] 
             if(fish["x"]>800):
@@ -254,8 +254,6 @@ while running:
                 else:
                     score2 -= 10
                 fish["x"] = 0
-            if(score1>=50 or score2>=50):
-                break
 
         for fish in fishes2:
             fish["x"] -= fish["speed"] 
@@ -273,12 +271,10 @@ while running:
                 else:
                     score2 -= 10
                 fish["x"] = 820
-            if(score1>=50 or score2>=50):
-                break
 
     screen.blit(background_image, (0, 0))
     
-    #Draw Grid    
+    # Draw Grid    
     for i in range(0,800,25):
         for j in range(305,600,25):
             pygame.draw.line(screen, BLACK, (i, j),(800,j), 3)
@@ -300,14 +296,13 @@ while running:
     score1_text = font.render(f"Score: {score1}", True, BLACK)
     score2_text = font.render(f"Score: {score2}", True, BLACK)
 
-    # time_text = font.render(f"Time: {int(remaining_time)}", True, BLACK)
+    time_text = font.render(f"Time: {int(remaining_time)}", True, BLACK)
 
     screen.blit(score1_text, (10, 10))
-    #screen.blit(time_text, (370, 10))
+    screen.blit(time_text, (370, 10))
     screen.blit(score2_text, (680, 10))
     screen.blit(test_image, (75,240))       # Remember, (75,240) are the coordinates of the agent1's hand
     screen.blit(test_image, (300,350))      # (725,250) are the coordinates of agent2's hand
-    #screen.blit(test_image, (185,325))
 
 
     time.sleep(0.1)
@@ -315,11 +310,11 @@ while running:
     pygame.display.flip()
 
     # Check if the game should end
-    # if remaining_time == 0:
-    #     running = False
+    if remaining_time == 0:
+        running = False
 
 # Display final score
-if(score1 >= 50):
+if(score1 > score2):
     final_score_text = font.render(f"Winner: Player-1", True, RED)
 elif(score1 == score2):
     final_score_text = font.render(f"Match Drawn", True, RED)
