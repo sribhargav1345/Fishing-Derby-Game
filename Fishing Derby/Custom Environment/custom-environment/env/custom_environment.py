@@ -178,8 +178,8 @@ class CustomEnvironment(ParallelEnv):
                 fish[0] = 805
         
         self.termination = 0
-        if self.rewards["fm1"]>50 or self.rewards["fm2"]>50:
-            terminations= {a: True for a in self.agents}
+        if self.rewards["fm1"]>=50 or self.rewards["fm2"]>=50:
+            terminations= {"fm1": True,"fm2": True}
 
             self.termination = 1
 
@@ -200,6 +200,9 @@ class CustomEnvironment(ParallelEnv):
         rewards=self.rewards
 
         self.render()
+
+        if(self.termination==1):
+            pygame.time.wait(3000)
 
         return observations, rewards, terminations, truncations, infos
 

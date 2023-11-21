@@ -62,7 +62,7 @@ if __name__ == "__main__":
 config = (
         PPOConfig()
         .environment(env="fish", clip_actions=True)
-        .rollouts(num_rollout_workers=4, rollout_fragment_length=128)
+        .rollouts(num_rollout_workers=1, rollout_fragment_length=128)
         .training(
             train_batch_size=512,
             lr=2e-5,
