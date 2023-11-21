@@ -15,7 +15,7 @@ from pettingzoo import ParallelEnv
 class CustomEnvironment(ParallelEnv):
 
     metadata = {
-        "name": "custom_environment_v0",
+        "name": "fish",
     }
 
     def __init__(self):
@@ -35,31 +35,33 @@ class CustomEnvironment(ParallelEnv):
         self.fishes3 = {5:[745,475],6:[695,530]}    # Blue-RL
         self.fishes4 = {7:[445,555],8:[145,405]}    # Red-RL
 
-        self.observation_spaces = dict(zip(self.possible_agents,[MultiDiscrete([800]*18)]*2))
+        self.observation_spaces = {'fm1':MultiDiscrete([801]*18),'fm2':MultiDiscrete([801]*18)}
         self.action_spaces = dict(zip(self.possible_agents,[Discrete(4)]*2))
 
+        self.rendering = True
         
-        pygame.init()
-        pygame.display.set_caption("Fishing Derby Game")
-        self.screen = pygame.display.set_mode((800,600))
+        if(self.rendering):
+            pygame.init()
+            pygame.display.set_caption("Fishing Derby Game")
+            self.screen = pygame.display.set_mode((800,600))
 
-        self.fish_image = pygame.image.load("bluefish.png")
-        self.fishr_image = pygame.image.load("bluefish2.png")
+            self.fish_image = pygame.image.load("bluefish.png")
+            self.fishr_image = pygame.image.load("bluefish2.png")
 
-        self.fish_image = pygame.transform.scale(self.fish_image, (25,25))
-        self.fishr_image = pygame.transform.scale(self.fishr_image, (25,25))
+            self.fish_image = pygame.transform.scale(self.fish_image, (25,25))
+            self.fishr_image = pygame.transform.scale(self.fishr_image, (25,25))
 
-        self.fish2_image = pygame.image.load("redfish.png")
-        self.fish2r_image = pygame.image.load("redfish2.png")
+            self.fish2_image = pygame.image.load("redfish.png")
+            self.fish2r_image = pygame.image.load("redfish2.png")
 
-        self.fish2_image = pygame.transform.scale(self.fish2_image, (25,25))
-        self.fish2r_image = pygame.transform.scale(self.fish2r_image, (25,25))
+            self.fish2_image = pygame.transform.scale(self.fish2_image, (25,25))
+            self.fish2r_image = pygame.transform.scale(self.fish2r_image, (25,25))
 
-        self.background_image = pygame.image.load("background-2.jpg")
-        self.background_image = pygame.transform.scale(self.background_image, (800,600))
+            self.background_image = pygame.image.load("background-2.jpg")
+            self.background_image = pygame.transform.scale(self.background_image, (800,600))
 
-        self.test_image = pygame.image.load("test.png")
-        self.test_image = pygame.transform.scale(self.test_image, (2,2))
+            self.test_image = pygame.image.load("test.png")
+            self.test_image = pygame.transform.scale(self.test_image, (2,2))
 
         
 
@@ -78,25 +80,34 @@ class CustomEnvironment(ParallelEnv):
         
         self.agents = copy(self.possible_agents)
 
-        observations = {
-            a: self.get_obs(a)
-            for a in self.agents
-        }
+        # observations = {
+        #     a: self.get_obs(a)
+        #     for a in self.agents
+        # }
+        observations = self.get_obs()
 
         infos = {a: {} for a in self.agents}
 
-        self.observation_spaces = observations
+        #self.observation_spaces = observations
 
         return observations, infos
 
-    def get_obs(self,agent):
-        if agent == 'fm1':
-            return np.array((self.pos["fm1"][0],self.pos["fm1"][1],self.fishes1[1][0],self.fishes1[1][1],self.fishes1[2][0],self.fishes1[2][1],self.fishes2[3][0],self.fishes2[3][1],self.fishes2[4][0],self.fishes2[4][1],self.fishes3[5][0],self.fishes3[5][1],self.fishes3[6][0],self.fishes3[6][1],self.fishes4[7][0],self.fishes4[7][1],self.fishes4[8][0],self.fishes4[8][1]
-            ))     # Only have to give fish and agent coordinates
-        else:
-            return np.array((self.pos["fm2"][0],self.pos["fm2"][1],self.fishes1[1][0],self.fishes1[1][1],self.fishes1[2][0],self.fishes1[2][1],self.fishes2[3][0],self.fishes2[3][1],self.fishes2[4][0],self.fishes2[4][1],self.fishes3[5][0],self.fishes3[5][1],self.fishes3[6][0],self.fishes3[6][1],self.fishes4[7][0],self.fishes4[7][1],self.fishes4[8][0],self.fishes4[8][1]
-            ))
-    
+    # def get_obs(self,agent):
+    #     if agent == 'fm1':
+    #         print('\n\n\n\nfm1 obs',np.array((self.pos["fm1"][0],self.pos["fm1"][1],self.fishes1[1][0],self.fishes1[1][1],self.fishes1[2][0],self.fishes1[2][1],self.fishes2[3][0],self.fishes2[3][1],self.fishes2[4][0],self.fishes2[4][1],self.fishes3[5][0],self.fishes3[5][1],self.fishes3[6][0],self.fishes3[6][1],self.fishes4[7][0],self.fishes4[7][1],self.fishes4[8][0],self.fishes4[8][1]
+    #         )))
+    #         return np.array((self.pos["fm1"][0],self.pos["fm1"][1],self.fishes1[1][0],self.fishes1[1][1],self.fishes1[2][0],self.fishes1[2][1],self.fishes2[3][0],self.fishes2[3][1],self.fishes2[4][0],self.fishes2[4][1],self.fishes3[5][0],self.fishes3[5][1],self.fishes3[6][0],self.fishes3[6][1],self.fishes4[7][0],self.fishes4[7][1],self.fishes4[8][0],self.fishes4[8][1]
+    #         ), dtype=np.int32)     # Only have to give fish and agent coordinates
+    #     elif agent == 'fm2':
+    #         print('\n\n\n\nfm2 obs',np.array((self.pos["fm2"][0],self.pos["fm2"][1],self.fishes1[1][0],self.fishes1[1][1],self.fishes1[2][0],self.fishes1[2][1],self.fishes2[3][0],self.fishes2[3][1],self.fishes2[4][0],self.fishes2[4][1],self.fishes3[5][0],self.fishes3[5][1],self.fishes3[6][0],self.fishes3[6][1],self.fishes4[7][0],self.fishes4[7][1],self.fishes4[8][0],self.fishes4[8][1]
+    #         )))
+    #         return np.array((self.pos["fm2"][0],self.pos["fm2"][1],self.fishes1[1][0],self.fishes1[1][1],self.fishes1[2][0],self.fishes1[2][1],self.fishes2[3][0],self.fishes2[3][1],self.fishes2[4][0],self.fishes2[4][1],self.fishes3[5][0],self.fishes3[5][1],self.fishes3[6][0],self.fishes3[6][1],self.fishes4[7][0],self.fishes4[7][1],self.fishes4[8][0],self.fishes4[8][1]
+    #         ), dtype=np.int32)
+    def get_obs(self):
+         return {
+         'fm1':np.array([self.pos["fm1"][0],self.pos["fm1"][1],self.fishes1[1][0],self.fishes1[1][1],self.fishes1[2][0],self.fishes1[2][1],self.fishes2[3][0],self.fishes2[3][1],self.fishes2[4][0],self.fishes2[4][1],self.fishes3[5][0],self.fishes3[5][1],self.fishes3[6][0],self.fishes3[6][1],self.fishes4[7][0],self.fishes4[7][1],self.fishes4[8][0],self.fishes4[8][1]], dtype=np.int32),    # Only have to give fish and agent coordinates
+         'fm2':np.array([self.pos["fm2"][0],self.pos["fm2"][1],self.fishes1[1][0],self.fishes1[1][1],self.fishes1[2][0],self.fishes1[2][1],self.fishes2[3][0],self.fishes2[3][1],self.fishes2[4][0],self.fishes2[4][1],self.fishes3[5][0],self.fishes3[5][1],self.fishes3[6][0],self.fishes3[6][1],self.fishes4[7][0],self.fishes4[7][1],self.fishes4[8][0],self.fishes4[8][1]], dtype=np.int32),
+         }
     def step(self, actions):
         terminations = {a: False for a in self.agents}
 
@@ -119,11 +130,11 @@ class CustomEnvironment(ParallelEnv):
             for fish in self.fishes3.values():
                 if ifIsCollide(self.pos[agent][0],self.pos[agent][1],fish[0],fish[1]):
                     self.rewards[agent] += 20
-                    fish[0] = 820
+                    fish[0] = 800
             for fish in self.fishes4.values():
                 if ifIsCollide(self.pos[agent][0],self.pos[agent][1],fish[0],fish[1]):
                     self.rewards[agent] -= 10
-                    fish[0] = 820
+                    fish[0] = 800
             
             if(agent=="fm1"):
                 if agent_action == 0:
@@ -161,21 +172,21 @@ class CustomEnvironment(ParallelEnv):
                     self.pos[agent][0] += 25
 
         for fish in self.fishes1.values():
-            fish[0] += 0.5
+            fish[0] += 0.75
             if(fish[0]>800):
                 fish[0] = 0
         for fish in self.fishes2.values():
-            fish[0] += 0.5
+            fish[0] += 0.75
             if(fish[0]>800):
                 fish[0] = 0
         for fish in self.fishes3.values():
-            fish[0] -= 0.5
+            fish[0] -= 0.75
             if(fish[0]<0):
-                fish[0] = 805
+                fish[0] = 800
         for fish in self.fishes4.values():
-            fish[0] -= 0.5
+            fish[0] -= 0.75
             if(fish[0]<0):
-                fish[0] = 805
+                fish[0] = 800
         
         self.termination = 0
         if self.rewards["fm1"]>=50 or self.rewards["fm2"]>=50:
@@ -189,31 +200,31 @@ class CustomEnvironment(ParallelEnv):
         if any(terminations.values()) or all(truncations.values()):
             self.agents = []
 
-        observations = {
-            a: self.get_obs(a)
-            for a in self.agents
-        }
-
+        # observations = {
+        #     a: self.get_obs(a)
+        #     for a in self.agents
+        # }
+        observations = self.get_obs()
         # Get dummy infos (not used in this example)
         infos = {a: {} for a in self.agents}
 
         rewards=self.rewards
-
-        self.render()
+        
+        if(self.rendering):
+            self.render()
 
         if(self.termination==1):
-            pygame.time.wait(3000)
+            time.sleep(3)
 
         return observations, rewards, terminations, truncations, infos
 
     def render(self):
-
         self.screen.blit(self.background_image, (0, 0))
 
-        for i in range(0,800,25):
-            for j in range(305,600,25):
-                pygame.draw.line(self.screen, (0,0,0), (i, j),(800,j), 3)
-                pygame.draw.line(self.screen, (0,0,0), (i, j),(i,600), 3)
+        # for i in range(0,800,25):
+        #     for j in range(305,600,25):
+        #         pygame.draw.line(self.screen, (0,0,0), (i, j),(800,j), 3)
+        #         pygame.draw.line(self.screen, (0,0,0), (i, j),(i,600), 3)
             
         pygame.draw.line(self.screen, (255,0,0), (75,225), (self.pos["fm1"][0],225), 3)
         pygame.draw.line(self.screen, (255,0,0), (700,225), (self.pos["fm2"][0], 225), 3)

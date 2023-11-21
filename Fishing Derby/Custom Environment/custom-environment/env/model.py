@@ -16,31 +16,6 @@ from ray.tune.registry import register_env
 from torch import nn
 from custom_environment import CustomEnvironment
 
-class CNNModelV2(TorchModelV2, nn.Module):
-    def __init__(self, obs_space, act_space, num_outputs, *args, **kwargs):
-        TorchModelV2.__init__(self, obs_space, act_space, num_outputs, *args, **kwargs)
-        nn.Module.__init__(self)
-        self.model = nn.Sequential(
-            nn.Conv2d(3, 32, [8, 8], stride=(4, 4)),
-            nn.ReLU(),
-            nn.Conv2d(32, 64, [4, 4], stride=(2, 2)),
-            nn.ReLU(),
-            nn.Conv2d(64, 64, [3, 3], stride=(1, 1)),
-            nn.ReLU(),
-            nn.Flatten(),
-            (nn.Linear(3136, 512)),
-            nn.ReLU(),
-        )
-        self.policy_fn = nn.Linear(512, num_outputs)
-        self.value_fn = nn.Linear(512, 1)
-
-    def forward(self, input_dict, state, seq_lens):
-        model_out = self.model(input_dict["obs"].permute(0, 3, 1, 2))
-        self._value_out = self.value_fn(model_out)
-        return self.policy_fn(model_out), state
-
-    def value_function(self):
-        return self._value_out.flatten()
     
 def env_creator(args):
     env = CustomEnvironment()
@@ -51,18 +26,15 @@ def env_creator(args):
     return env
 
 if __name__ == "__main__":
-    ray.init()
+    ray.init(num_gpus=0)
 
     env_name = "fish"
-
     register_env(env_name, lambda config: ParallelPettingZooEnv(env_creator(config)))
-    ModelCatalog.register_custom_model("CNNModelV2", CNNModelV2)
-
 
 config = (
         PPOConfig()
         .environment(env="fish", clip_actions=True)
-        .rollouts(num_rollout_workers=1, rollout_fragment_length=128)
+        .rollouts(num_rollout_workers=3)
         .training(
             train_batch_size=512,
             lr=2e-5,
@@ -77,7 +49,7 @@ config = (
             num_sgd_iter=10,
         )
         .debugging(log_level="ERROR")
-        .framework(framework="torch")
+        .framework(framework="tf")
         .resources(num_gpus=int(os.environ.get("RLLIB_NUM_GPUS", "0")))
     )
 
