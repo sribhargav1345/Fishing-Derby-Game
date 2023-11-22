@@ -80,10 +80,6 @@ class CustomEnvironment(ParallelEnv):
         
         self.agents = copy(self.possible_agents)
 
-        # observations = {
-        #     a: self.get_obs(a)
-        #     for a in self.agents
-        # }
         observations = self.get_obs()
 
         infos = {a: {} for a in self.agents}
@@ -92,17 +88,6 @@ class CustomEnvironment(ParallelEnv):
 
         return observations, infos
 
-    # def get_obs(self,agent):
-    #     if agent == 'fm1':
-    #         print('\n\n\n\nfm1 obs',np.array((self.pos["fm1"][0],self.pos["fm1"][1],self.fishes1[1][0],self.fishes1[1][1],self.fishes1[2][0],self.fishes1[2][1],self.fishes2[3][0],self.fishes2[3][1],self.fishes2[4][0],self.fishes2[4][1],self.fishes3[5][0],self.fishes3[5][1],self.fishes3[6][0],self.fishes3[6][1],self.fishes4[7][0],self.fishes4[7][1],self.fishes4[8][0],self.fishes4[8][1]
-    #         )))
-    #         return np.array((self.pos["fm1"][0],self.pos["fm1"][1],self.fishes1[1][0],self.fishes1[1][1],self.fishes1[2][0],self.fishes1[2][1],self.fishes2[3][0],self.fishes2[3][1],self.fishes2[4][0],self.fishes2[4][1],self.fishes3[5][0],self.fishes3[5][1],self.fishes3[6][0],self.fishes3[6][1],self.fishes4[7][0],self.fishes4[7][1],self.fishes4[8][0],self.fishes4[8][1]
-    #         ), dtype=np.int32)     # Only have to give fish and agent coordinates
-    #     elif agent == 'fm2':
-    #         print('\n\n\n\nfm2 obs',np.array((self.pos["fm2"][0],self.pos["fm2"][1],self.fishes1[1][0],self.fishes1[1][1],self.fishes1[2][0],self.fishes1[2][1],self.fishes2[3][0],self.fishes2[3][1],self.fishes2[4][0],self.fishes2[4][1],self.fishes3[5][0],self.fishes3[5][1],self.fishes3[6][0],self.fishes3[6][1],self.fishes4[7][0],self.fishes4[7][1],self.fishes4[8][0],self.fishes4[8][1]
-    #         )))
-    #         return np.array((self.pos["fm2"][0],self.pos["fm2"][1],self.fishes1[1][0],self.fishes1[1][1],self.fishes1[2][0],self.fishes1[2][1],self.fishes2[3][0],self.fishes2[3][1],self.fishes2[4][0],self.fishes2[4][1],self.fishes3[5][0],self.fishes3[5][1],self.fishes3[6][0],self.fishes3[6][1],self.fishes4[7][0],self.fishes4[7][1],self.fishes4[8][0],self.fishes4[8][1]
-    #         ), dtype=np.int32)
     def get_obs(self):
          return {
          'fm1':np.array([self.pos["fm1"][0],self.pos["fm1"][1],self.fishes1[1][0],self.fishes1[1][1],self.fishes1[2][0],self.fishes1[2][1],self.fishes2[3][0],self.fishes2[3][1],self.fishes2[4][0],self.fishes2[4][1],self.fishes3[5][0],self.fishes3[5][1],self.fishes3[6][0],self.fishes3[6][1],self.fishes4[7][0],self.fishes4[7][1],self.fishes4[8][0],self.fishes4[8][1]], dtype=np.int32),    # Only have to give fish and agent coordinates
